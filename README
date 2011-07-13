@@ -1,0 +1,83 @@
+Introduction
+============
+
+Scribe-utils is the collection of C++ scribe clients (and scribe wrapper) 
+which are used to send the messages to the Scribe server.
+(Scribe is a server for aggregating log data that's streamed in real
+time from clients.See the Scribe Wiki for documentation:
+http://wiki.github.com/facebook/scribe)
+
+At present, the collection includes:
+- scribe_stdin: The scribe_stdin client listens to standard input for the messages
+	which are to be sent to scribe server.
+- scribe_tail: The scribe_tail client is a file tailer which listens to a log file 
+	and send the messages to the scribe server.
+- libscribewrapper: The libscribewrapper is the wrapper which converts the
+	plain text messages to the Scribe server understandable format (i.e.
+	Thrift RPC calls). It is available as a shared library which can be
+	used for creating user derived clients.
+
+Scribe-utils also supports running clients in debug mode which prepends few
+special fields with the original messages. These special fields can be used
+later to validate the messages integrity.
+The debug message is in the format of
+
+mode>>>uid>>>starttime>>>counters>>>senttime>>>orig_msg
+
+where,
+mode: can have three values BEGIN, STEP, END.
+	BEGIN signifies the start of batch of messages.
+	STEP signifies consecutive message
+	END signifies the end of batch of messages
+uid: Unique id for each batch of messages
+starttime: Time when the a batch of messages started sending
+counters: incremental counter (+1) for the batch of messages.
+senttime: Time when individual message was sent.
+orig_msg: Original message.
+
+
+License (See LICENSE file for full license)
+===========================================
+Copyright 2011 Nokia
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+Requirements
+============
+
+[libevent] Event Notification library
+[boost] Boost C++ library (version 1.36 or later)
+	- boost program options
+	- boost iostream
+[thrift] Thrift framework
+[fb303] Facebook Bassline (included in thrift/contrib/fb303/)
+   fb303 r697294 or later is required.
+
+These libraries are open source and may be freely obtained, but they are not
+provided as a part of this distribution.
+
+
+Install
+=======
+
+Run as root:
+	make install
+
+Usage
+=====
+Run the program as
+
+#cat logfile | scribe_stdin --host 127.0.0.1 --port 1463 --category default
+
+#scribe_tail --host 127.0.0.1 --port 1463 --category default --file logfile &
