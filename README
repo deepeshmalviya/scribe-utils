@@ -72,7 +72,7 @@ Install
 =======
 
 Run as root:
-	make install
+	make all install
 
 Usage
 =====
